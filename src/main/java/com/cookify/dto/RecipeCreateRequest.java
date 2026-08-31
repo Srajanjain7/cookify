@@ -17,6 +17,7 @@ public record RecipeCreateRequest(
         Integer speedRating,
         Integer difficultyRating,
         String cuisineRegion,
-        String foodType
+        String foodType,
+        String requiredEquipment
 ) {
 }

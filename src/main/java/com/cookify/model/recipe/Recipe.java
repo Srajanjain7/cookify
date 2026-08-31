@@ -14,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
@@ -54,13 +53,23 @@ public abstract class Recipe {
     @Column(name = "recipe_name", nullable = false)
     private String recipeName;
 
-    @Lob
-    @Column(nullable = false)
+    // Plain long-text columns, not @Lob/CLOB -- H2's LOWER() (used by
+    // keyword search) can't operate on a CLOB without an explicit cast,
+    // and the ERD specifies these as plain varchar/string anyway.
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String ingredients;
 
-    @Lob
-    @Column(name = "recipe_method", nullable = false)
+    @Column(name = "recipe_method", nullable = false, columnDefinition = "TEXT")
     private String method;
+
+    /**
+     * Free-text utensils/equipment needed. No source artifact models
+     * this (table, ERD, prototype, or test case) even though "required
+     * utensils/equipment" is a named filter in the assignment brief --
+     * added in Phase 4 to support that filter. See DESIGN-DEVIATIONS.md.
+     */
+    @Column(name = "required_equipment")
+    private String requiredEquipment;
 
     @Column(name = "image_path")
     private String imagePath;

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -56,12 +57,21 @@ public class SecurityConfig {
         return new HttpSessionSecurityContextRepository();
     }
 
-    /** Persistent "remember me" cookie backing "session remembered" (test case 2). */
+    /**
+     * Persistent "remember me" cookie backing "session remembered" (test
+     * case 2). JdbcTokenRepositoryImpl.setCreateTableOnStartup(true) runs
+     * an unconditional CREATE TABLE with no IF NOT EXISTS -- it would
+     * crash the app on every restart after the first against a
+     * persisted database. Create the identical table ourselves,
+     * idempotently, instead.
+     */
     @Bean
     public PersistentTokenRepository persistentTokenRepository(DataSource dataSource) {
+        new JdbcTemplate(dataSource).execute(
+                "create table if not exists persistent_logins (username varchar(64) not null, "
+                        + "series varchar(64) primary key, token varchar(64) not null, last_used timestamp not null)");
         JdbcTokenRepositoryImpl repository = new JdbcTokenRepositoryImpl();
         repository.setDataSource(dataSource);
-        repository.setCreateTableOnStartup(true);
         return repository;
     }
 

@@ -161,3 +161,64 @@ not replacing, the class hierarchy.
   Recipe View prototypes show steps 1-9 individually. Schema was
   already fixed in Phase 1; the frontend can format/number a
   newline-joined string without a schema change.
+- **`Recipe.ingredients` and `Recipe.method` changed from `@Lob` to a
+  plain long-text column.** Phase 4's keyword search needs `LOWER()`
+  on these fields, and H2 can't run `LOWER()` on a CLOB without an
+  explicit cast. Switching to a plain text column sidesteps that and
+  is arguably closer to the ERD anyway (`ingredient : varchar`,
+  `recipe_method : string`, not an explicit large-object type).
+
+## Phase 4: search, filters & recommendation
+
+- **`Recipe.requiredEquipment` added** (free text, e.g. "steamer,
+  blender"), filtered by keyword match alongside the main search
+  query. "Required utensils/equipment" is a named filter in the
+  assignment's functional brief but has no column in any table, the
+  ERD, the upload prototype, or a test case — flagged in the original
+  requirements analysis (section N) as a gap, and closed here rather
+  than left unimplemented, the same way the brief's other filters
+  (cost, cooking time, calories, veg/non-veg, popularity) already had
+  homes.
+- **The Recipe Search pseudocode's "empty query = error" is not
+  enforced.** Read literally, `GET /api/recipes` with no `query` would
+  have to reject every filter-only browse (e.g. "just show me Veg
+  recipes under 30 minutes"), but the Browse Page prototype's own UI
+  (speed/difficulty sliders, a Veg/Non-Veg toggle) clearly supports
+  browsing without typing a keyword, and Phase 3's plain recipe list
+  already relied on query-less browsing. An absent/blank `query` is
+  treated as "no keyword filter", not an error.
+- **"Filter by ... Tags"** (pseudocode) is served by the existing
+  `dietaryTag`, `cuisineRegion`, and `foodType` fields (Phase 1's fold
+  of `Recipe_Category` into `Recipe`) rather than a separate freeform
+  tag entity, since nothing in the source material defines a distinct
+  tag model beyond those category-like fields.
+- **Rating-based filtering/sorting (`minRating`, `sort=topRated`)
+  happens in the service layer, not the database query.** Average
+  rating was deliberately kept out of `Recipe` as a stored/denormalized
+  column (Phase 1 followed the ERD's separate `Recipe_Rating` entity),
+  so it can't be pushed into the same JPA Specification as the other
+  filters; candidates are fetched via Specification first, then scored
+  and (optionally) filtered/sorted in Java. Fine at this project's
+  scale; would need a real aggregate query or a materialized rating
+  column to stay efficient at a much larger scale.
+- **"Recommended" (test case 13) is a simple boost, not a scored
+  algorithm:** results from creators the current user follows are
+  moved ahead of everyone else, preserving the chosen sort within each
+  group. The assignment specifies no ranking formula or weighting
+  (flagged as unspecified in the original requirements analysis,
+  section H) — implemented as the smallest thing that visibly
+  satisfies "the subscriber account is recommended more of their
+  posts". Silently ignored for anonymous requests rather than erroring,
+  since it's a soft personalization flag, not a gated action. Actually
+  subscribing arrives in Phase 6; the query-side logic was written and
+  tested now against a manually inserted `Subscription` row since the
+  repository already existed from Phase 1.
+- **Fixed a real (non-test-only) bug found while restarting the app
+  during this phase's testing:** `PersistentTokenRepository`'s
+  `setCreateTableOnStartup(true)` (Phase 2) issues an unconditional
+  `CREATE TABLE persistent_logins` with no `IF NOT EXISTS` guard --
+  every earlier verification run had wiped the H2 data directory
+  before restarting, which hid that it would crash the app on any
+  restart against a database that already had the table. Replaced with
+  an idempotent `CREATE TABLE IF NOT EXISTS` run once via `JdbcTemplate`
+  before the repository bean is constructed.
