@@ -222,3 +222,59 @@ not replacing, the class hierarchy.
   restart against a database that already had the table. Replaced with
   an idempotent `CREATE TABLE IF NOT EXISTS` run once via `JdbcTemplate`
   before the repository bean is constructed.
+
+## Phase 5: ratings, comments, moderation & ban
+
+- **Re-rating updates the existing score rather than erroring or
+  duplicating.** The Rating pseudocode doesn't address a user rating
+  the same recipe twice; the DB design already enforces one rating per
+  `(recipe, user)` pair (Phase 1's unique constraint), so "rate again"
+  reads most naturally as "change your rating" -- matches ordinary
+  rating-widget UX and lets test case 9's averaging reflect a user's
+  latest opinion rather than silently rejecting the second attempt.
+- **NSFW filtering is a small keyword blocklist, not a real
+  moderation model.** No word list, API, or algorithm is specified
+  anywhere in the source material. `ModerationService.isSafe()` is
+  written as a single seam so a real moderation service could replace
+  it without touching `CommentService`.
+- **The two pseudocode function names for the same check
+  (`validateComment` in Commenting, `validateCommentSafe` in
+  Subscription) are implemented as one method,** `ModerationService.
+  isSafe()`, reused by both -- the two blocks describe the same
+  content-safety check, not two different ones.
+- **Blocked comments are never persisted** (matches the Commenting
+  flowchart's "Invalid Comment" branch returning to input without an
+  upload), but the resulting warning is: test case 8 requires the
+  warning stored in the user database regardless of what happens to
+  the comment text itself.
+- **Ban is implemented as `accountStatus = BANNED` plus cascading
+  deletion of content**, not literal row deletion of the `User`
+  itself. Test case 11 says the account is "temporarily / permanently
+  suspended / deleted" -- with no admin/unban flow specified anywhere
+  (flagged as unspecified in the original requirements analysis),
+  automatic banning after 3 warnings is treated as permanent for this
+  system. Keeping the `User` row (rather than deleting it) avoids
+  reopening the username/email for immediate reuse and sidesteps any
+  FK cleanup the row's own presence doesn't require, while `Login`
+  already rejects `BANNED` accounts (Phase 2) -- so the two features
+  compose without new code. "Interaction history" is read as content
+  the user generated (comments, ratings, recipes, saved recipes,
+  subscriptions in both directions); `Warning` rows are deliberately
+  kept as the audit trail for why the ban happened.
+- **Found and fixed a transactional-boundary bug during this phase's
+  testing, not a hypothetical one:** `CommentService.addComment()`
+  calls `ModerationService.issueWarning()` and then throws
+  `ApiException` to reject the comment. Both methods were
+  `@Transactional` with default (REQUIRED) propagation, so
+  `issueWarning()` ran inside the *same* transaction as `addComment()`
+  -- and Spring rolls back the whole transaction on any unchecked
+  exception escaping a `@Transactional` method. The result: throwing
+  to reject the NSFW comment silently undid the warning and ban that
+  were supposed to survive it. First-hand confirmed live (posted 3
+  NSFW comments; the "banned" email logged, but the account, comment,
+  and rating were all untouched) before being traced to the shared
+  transaction and fixed with `@Transactional(propagation =
+  REQUIRES_NEW)` on `issueWarning()`, then re-verified end-to-end
+  against two scenarios: a user with no recipes of their own, and a
+  user whose own recipe (with another user's comment and rating on
+  it) had to be fully removed as part of the same ban.

@@ -28,9 +28,14 @@ public record RecipeResponse(
         Long creatorId,
         String creatorUsername,
         double averageRating,
-        long ratingCount
+        long ratingCount,
+        Integer myRating
 ) {
     public static RecipeResponse from(Recipe recipe, double averageRating, long ratingCount) {
+        return from(recipe, averageRating, ratingCount, null);
+    }
+
+    public static RecipeResponse from(Recipe recipe, double averageRating, long ratingCount, Integer myRating) {
         return new RecipeResponse(
                 recipe.getId(),
                 recipe.getRecipeName(),
@@ -54,7 +59,8 @@ public record RecipeResponse(
                 recipe.getCreator().getId(),
                 recipe.getCreator().getUsername(),
                 averageRating,
-                ratingCount
+                ratingCount,
+                myRating
         );
     }
 }

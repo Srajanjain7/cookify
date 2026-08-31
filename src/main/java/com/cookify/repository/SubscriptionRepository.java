@@ -11,4 +11,8 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     long countByCreatorId(Long creatorId);
     List<Subscription> findByCreatorId(Long creatorId);
     List<Subscription> findBySubscriberId(Long subscriberId);
+
+    /** Ban cascade (test case 11): remove both directions -- their followers and who they followed. */
+    void deleteBySubscriberId(Long subscriberId);
+    void deleteByCreatorId(Long creatorId);
 }

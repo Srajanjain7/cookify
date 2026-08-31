@@ -9,6 +9,7 @@ import com.cookify.dto.RecipeUpdateRequest;
 import com.cookify.model.recipe.DietaryTag;
 import com.cookify.model.recipe.Recipe;
 import com.cookify.security.CookifyUserDetails;
+import com.cookify.service.RatingService;
 import com.cookify.service.RecipeService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,9 +30,11 @@ import java.util.List;
 public class RecipeController {
 
     private final RecipeService recipeService;
+    private final RatingService ratingService;
 
-    public RecipeController(RecipeService recipeService) {
+    public RecipeController(RecipeService recipeService, RatingService ratingService) {
         this.recipeService = recipeService;
+        this.ratingService = ratingService;
     }
 
     /**
@@ -67,9 +70,12 @@ public class RecipeController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<RecipeResponse> get(@PathVariable Long id) {
+    public ApiResponse<RecipeResponse> get(@AuthenticationPrincipal CookifyUserDetails principal, @PathVariable Long id) {
         Recipe recipe = recipeService.viewRecipe(id);
-        return ApiResponse.ok("OK", RecipeResponse.from(recipe, recipeService.averageRating(id), recipeService.ratingCount(id)));
+        Long userId = principal == null ? null : principal.getUser().getId();
+        Integer myRating = ratingService.myRating(id, userId).orElse(null);
+        return ApiResponse.ok("OK",
+                RecipeResponse.from(recipe, recipeService.averageRating(id), recipeService.ratingCount(id), myRating));
     }
 
     @PostMapping(consumes = "multipart/form-data")
