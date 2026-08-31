@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - COOKify</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="logo"><span class="cook">COOK</span><span class="ify">ify</span></a>
+    <div id="google_translate_element"></div>
+  </nav>
+
+  <div class="form-page">
+    <div class="form-card">
+      <h1>Login</h1>
+      <div id="alert-box"></div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="identifier">Username / Email / Phone Number</label>
+          <input class="input-pill" type="text" id="identifier" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input class="input-pill" type="password" id="password" required />
+        </div>
+
+        <div id="otp-group" class="form-group hidden">
+          <label for="otp">2FA OTP</label>
+          <input class="input-pill" type="text" id="otp" inputmode="numeric" maxlength="6" />
+          <div class="hint-box mt-16">A 6-digit code has been emailed to you.</div>
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="remember-me" />
+          <label for="remember-me" style="margin: 0;">Remember me on this device</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="submit-btn">Confirm Login</button>
+      </form>
+
+      <p class="form-footer-link"><a href="password-reset.html">Forgot Password?</a></p>
+      <p class="form-footer-link">Don't have an account? <a href="signup.html">Sign Up</a></p>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div>
+      <h4>Contact Us</h4>
+      <p>Contact Info: +91 1234567890</p>
+      <p>+91 0987654321</p>
+    </div>
+    <div class="footer-links text-center"><a href="#">Learn More About Us</a></div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script>
+    const form = document.getElementById("login-form");
+    const alertBox = document.getElementById("alert-box");
+    const otpGroup = document.getElementById("otp-group");
+    const submitBtn = document.getElementById("submit-btn");
+    let awaitingTwoFactor = false;
+
+    function showError(message) {
+      alertBox.innerHTML = `<div class="alert alert-error">${message}</div>`;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      alertBox.innerHTML = "";
+      const identifier = document.getElementById("identifier").value.trim();
+      const rememberMe = document.getElementById("remember-me").checked;
+
+      try {
+        if (!awaitingTwoFactor) {
+          const password = document.getElementById("password").value;
+          const result = await Api.post("/api/auth/login", { identifier, password, rememberMe });
+          if (result.status === "TWO_FACTOR_REQUIRED") {
+            awaitingTwoFactor = true;
+            otpGroup.classList.remove("hidden");
+            document.getElementById("password").disabled = true;
+            document.getElementById("identifier").disabled = true;
+            submitBtn.textContent = "Verify Code";
+            alertBox.innerHTML = `<div class="alert alert-success">${result.message}</div>`;
+          } else {
+            window.location.href = "browse.html";
+          }
+        } else {
+          const code = document.getElementById("otp").value.trim();
+          await Api.post("/api/auth/verify-2fa", { identifier, code, rememberMe });
+          window.location.href = "browse.html";
+        }
+      } catch (err) {
+        showError(err.message);
+      }
+    });
+  </script>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({ pageLanguage: "en", includedLanguages: "hi,zh-CN,ru,es,fr", layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, "google_translate_element");
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

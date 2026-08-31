@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>COOKify</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="form-page" style="padding-top: 80px;">
+    <div class="form-card text-center">
+      <div style="font-size: 2.4rem; margin-bottom: 24px;">
+        <span class="cook" style="font-weight: 800;">COOK</span><span style="color: var(--primary-end); font-weight: 800;">ify</span>
+      </div>
+      <a href="login.html" class="btn btn-primary btn-block" style="margin-bottom: 16px;">Login</a>
+      <a href="signup.html" class="btn btn-secondary btn-block">Sign Up</a>
+      <p class="mt-16"><a href="browse.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem;">Browse recipes without an account &rarr;</a></p>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div>
+      <h4>Contact Us</h4>
+      <p>Contact Info: +91 1234567890</p>
+      <p>+91 0987654321</p>
+    </div>
+    <div class="footer-links text-center">
+      <a href="#">Learn More About Us</a>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script>
+    // "Remember login details on devices" (test case 2) -- skip the splash for an active session.
+    (async () => {
+      try {
+        await Api.get("/api/profile/me");
+        window.location.href = "browse.html";
+      } catch (e) {
+        // not logged in -- show the splash
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Explore Recipes - COOKify</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="logo"><span class="cook">COOK</span><span class="ify">ify</span></a>
+    <ul class="nav-links">
+      <li><a href="browse.html">Explore</a></li>
+    </ul>
+    <div id="google_translate_element"></div>
+    <div class="nav-right" id="nav-right"></div>
+  </nav>
+
+  <div class="container">
+    <div class="explore-panel">
+      <h1>Explore Recipes</h1>
+
+      <form id="search-form">
+        <div class="search-row">
+          <input class="input-pill" type="text" id="query" placeholder="Search recipe, ingredient, or equipment" />
+          <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+
+        <div class="filters-toggle">
+          <span class="chip" data-diet="">Any</span>
+          <span class="chip" data-diet="VEG">Veg</span>
+          <span class="chip" data-diet="NON_VEG">Non-Veg</span>
+          <span class="chip hidden" id="recommended-chip" data-recommended="1">Recommended for you</span>
+        </div>
+
+        <div class="filters-grid">
+          <div>
+            <label>Min. Speed</label>
+            <select class="input-pill" id="min-speed">
+              <option value="">Any</option>
+              <option value="1">1+</option>
+              <option value="2">2+</option>
+              <option value="3">3+</option>
+              <option value="4">4+</option>
+              <option value="5">5</option>
+            </select>
+          </div>
+          <div>
+            <label>Min. Difficulty</label>
+            <select class="input-pill" id="min-difficulty">
+              <option value="">Any</option>
+              <option value="1">1+</option>
+              <option value="2">2+</option>
+              <option value="3">3+</option>
+              <option value="4">4+</option>
+              <option value="5">5</option>
+            </select>
+          </div>
+          <div>
+            <label>Max Cooking Time (min)</label>
+            <input class="input-pill" type="number" id="max-cooking-time" min="0" />
+          </div>
+          <div>
+            <label>Cuisine Region</label>
+            <input class="input-pill" type="text" id="cuisine-region" placeholder="e.g. South Indian" />
+          </div>
+          <div>
+            <label>Food Type</label>
+            <input class="input-pill" type="text" id="food-type" placeholder="e.g. Appetizer" />
+          </div>
+          <div>
+            <label>Min. Rating</label>
+            <select class="input-pill" id="min-rating">
+              <option value="">Any</option>
+              <option value="1">1+</option>
+              <option value="2">2+</option>
+              <option value="3">3+</option>
+              <option value="4">4+</option>
+              <option value="5">5</option>
+            </select>
+          </div>
+          <div>
+            <label>Sort by</label>
+            <select class="input-pill" id="sort">
+              <option value="popular">Popular</option>
+              <option value="newest">Newest</option>
+              <option value="topRated">Top Rated</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div id="results"></div>
+  </div>
+
+  <footer class="site-footer">
+    <div>
+      <h4>Contact Us</h4>
+      <p>Contact Info: +91 1234567890</p>
+      <p>+91 0987654321</p>
+    </div>
+    <div class="footer-links text-center"><a href="#">Learn More About Us</a></div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/browse.js"></script>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({ pageLanguage: "en", includedLanguages: "hi,zh-CN,ru,es,fr", layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, "google_translate_element");
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

@@ -101,7 +101,7 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/api/csrf", "/h2-console/**",
-                                "/", "/index.html", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
+                                "/", "/*.html", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/recipes/**", "/api/users/**").permitAll()
                         .anyRequest().authenticated())
                 .securityContext(context -> context.securityContextRepository(securityContextRepository))

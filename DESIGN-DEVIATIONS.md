@@ -316,3 +316,73 @@ not replacing, the class hierarchy.
   for a phase about subscriptions specifically; noted here so it
   doesn't read as an oversight when the frontend phase reaches that
   carousel.
+
+## Phase 7: frontend + multilingual
+
+- **Built as a static multi-page app** (one `.html` per screen under
+  `src/main/resources/static/`, shared `css/styles.css` +
+  `js/api.js`/`js/nav.js`, plain `fetch()` to the REST API) rather
+  than a single-page app framework, matching the assignment's
+  "Frontend should be built using HTML/CSS/JS" and the architecture
+  decided in Phase 0 (no Node/npm on this machine; Spring serves the
+  files as static resources with zero build step).
+- **8 screens covering all 9 PDF prototypes' distinct states**
+  (`index.html` landing, `login.html` with 2FA, `signup.html`
+  including the duplicate-username/email error state, `password-
+  reset.html`, `browse.html`, `recipe.html`, `recipe-form.html`
+  serving both Upload and Edit, `profile.html` serving both the owner
+  view with Edit Profile and the public view with Subscribe). The
+  landing page auto-redirects to `browse.html` when a session is
+  already active, rather than showing the splash every visit --
+  reconciling the PDF's structure diagram (Homepage gates on Signup/
+  Login) with "remember login details on devices" (test case 2)
+  actually being visible to a returning user, not just true in the
+  session cookie.
+- **2FA is presented as a two-step reveal on one screen**, not two
+  screens: the OTP field is hidden until the identifier/password step
+  succeeds, then appears in place with the same fields disabled --
+  visually matching the Login prototype's single screen (which shows
+  all three fields together) while driving the two-step API from
+  Phase 2 (login -> `TWO_FACTOR_REQUIRED` -> verify-2fa), which exists
+  because the code can't be emailed before the password is checked.
+- **Google Translate's website widget** (`google.translate.
+  TranslateElement`, `includedLanguages: hi,zh-CN,ru,es,fr`) on every
+  page satisfies test case 12's literal wording ("compatible with
+  Google's translation feature ... at least 5 major languages: Hindi,
+  Mandarin, Russian, Spanish and French") without building a custom
+  i18n/resource-bundle system, which nothing in the source material
+  calls for beyond that literal sentence.
+- **`SecurityConfig` needed a fix mid-phase, not a hypothetical one:**
+  it only permitted `/`, `/index.html`, `/css/**`, `/js/**` -- every
+  other new page (`login.html`, `browse.html`, `recipe.html`, etc.)
+  fell through to the default `anyRequest().authenticated()` rule,
+  meaning an anonymous visitor couldn't even load the login page
+  without already being logged in. Changed to `/*.html` so every
+  top-level static page is public (the actual access control already
+  lives at the API layer, per-endpoint, unaffected by this).
+- **Found and fixed two real bugs via full browser testing (Playwright
+  + Chromium, installed for this since no browser automation tool was
+  otherwise available), not caught by writing the code or by the
+  backend's own tests:**
+  1. Submitting a star rating called the page's full `loadRecipe()` reload
+     (re-fetching the recipe and rebuilding the entire `#content`
+     DOM, including the comment compose box) instead of a targeted
+     update. Caught by an automated browser test that rated a recipe
+     then immediately tried to type and submit a comment: the comment
+     textarea got silently replaced mid-interaction, so the "fill"
+     landed on a since-detached element and the follow-up submit hit
+     the browser's native required-field validation instead of the
+     server. Beyond the race, the reload also hit the same `GET
+     /api/recipes/{id}` that increments the view counter (Phase 3),
+     so every rating submission was spuriously inflating the view
+     count feeding Phase 4's popularity sort. Fixed by using the
+     rating endpoint's own response (`averageRating`, `ratingCount`,
+     `myRating`) to update just the rating widget in place --
+     strictly better on both the race and the view-count-inflation
+     front, and re-verified end-to-end afterward.
+  2. Confirmed via the same tooling: the 2FA reveal, wrong-code
+     rejection, and NSFW comment rejection ("Invalid Comment: Please
+     use appropriate language") all render correctly against the live
+     backend, with zero browser console errors across every screen
+     exercised (signup, login, 2FA, recipe upload with image, rating,
+     commenting, search/filter, and profile viewing/editing).

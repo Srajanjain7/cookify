@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload Recipe - COOKify</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="logo"><span class="cook">COOK</span><span class="ify">ify</span></a>
+    <ul class="nav-links">
+      <li><a href="browse.html">Explore</a></li>
+    </ul>
+    <div id="google_translate_element"></div>
+    <div class="nav-right" id="nav-right"></div>
+  </nav>
+
+  <div class="container" style="max-width: 720px;">
+    <div class="explore-panel">
+      <h1 id="form-title">Add Recipe</h1>
+      <div id="alert-box"></div>
+
+      <form id="recipe-form">
+        <div class="form-group">
+          <label for="recipe-name">Title</label>
+          <input class="input-pill" type="text" id="recipe-name" required />
+        </div>
+
+        <div class="form-group" id="diet-type-group">
+          <label>Veg / Non-Veg</label>
+          <div class="filters-toggle">
+            <span class="chip" data-diet="VEG">Veg</span>
+            <span class="chip" data-diet="NON_VEG">Non-Veg</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="image-file">Upload Image</label>
+          <input type="file" id="image-file" accept="image/*" />
+        </div>
+        <div class="form-group">
+          <label for="video-file">Upload Video (optional)</label>
+          <input type="file" id="video-file" accept="video/*" />
+        </div>
+
+        <div class="form-group">
+          <label for="ingredients">Ingredients</label>
+          <textarea class="input-pill" id="ingredients" rows="3" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="method">Steps (one per line)</label>
+          <textarea class="input-pill" id="method" rows="6" placeholder="1. Boil water&#10;2. Add rice&#10;3. Simmer for 10 minutes" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="required-equipment">Required Equipment (optional)</label>
+          <input class="input-pill" type="text" id="required-equipment" placeholder="e.g. steamer, blender" />
+        </div>
+
+        <div class="filters-grid">
+          <div>
+            <label for="dietary-tag">Dietary Tag</label>
+            <select class="input-pill" id="dietary-tag">
+              <option value="">None</option>
+              <option value="VEGAN">Vegan</option>
+              <option value="VEGETARIAN">Vegetarian</option>
+              <option value="EGGETARIAN">Eggetarian</option>
+              <option value="PESCETARIAN">Pescetarian</option>
+              <option value="JAIN">Jain</option>
+              <option value="NON_VEGETARIAN">Non-Vegetarian</option>
+            </select>
+          </div>
+          <div>
+            <label for="cooking-time">Cooking Time (min)</label>
+            <input class="input-pill" type="number" id="cooking-time" min="0" />
+          </div>
+          <div>
+            <label for="calories">Calories</label>
+            <input class="input-pill" type="number" id="calories" min="0" />
+          </div>
+          <div>
+            <label for="protein">Protein (g)</label>
+            <input class="input-pill" type="number" id="protein" min="0" />
+          </div>
+          <div>
+            <label for="cost">Cost</label>
+            <input class="input-pill" type="number" id="cost" min="0" step="0.01" />
+          </div>
+          <div>
+            <label for="speed">Speed (1-5)</label>
+            <select class="input-pill" id="speed">
+              <option value="">--</option>
+              <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+            </select>
+          </div>
+          <div>
+            <label for="difficulty">Difficulty (1-5)</label>
+            <select class="input-pill" id="difficulty">
+              <option value="">--</option>
+              <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+            </select>
+          </div>
+          <div>
+            <label for="cuisine-region">Cuisine Region</label>
+            <input class="input-pill" type="text" id="cuisine-region" placeholder="e.g. South Indian" />
+          </div>
+          <div>
+            <label for="food-type">Food Type</label>
+            <input class="input-pill" type="text" id="food-type" placeholder="e.g. Appetizer" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block mt-16" id="submit-btn">Submit Recipe</button>
+      </form>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div>
+      <h4>Contact Us</h4>
+      <p>Contact Info: +91 1234567890</p>
+      <p>+91 0987654321</p>
+    </div>
+    <div class="footer-links text-center"><a href="#">Learn More About Us</a></div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/recipe-form.js"></script>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({ pageLanguage: "en", includedLanguages: "hi,zh-CN,ru,es,fr", layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, "google_translate_element");
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

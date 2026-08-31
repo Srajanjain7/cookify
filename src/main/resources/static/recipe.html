@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recipe - COOKify</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="logo"><span class="cook">COOK</span><span class="ify">ify</span></a>
+    <ul class="nav-links">
+      <li><a href="browse.html">Explore</a></li>
+    </ul>
+    <div id="google_translate_element"></div>
+    <div class="nav-right" id="nav-right"></div>
+  </nav>
+
+  <div class="container">
+    <div id="content"><p class="empty-state">Loading...</p></div>
+  </div>
+
+  <footer class="site-footer">
+    <div>
+      <h4>Contact Us</h4>
+      <p>Contact Info: +91 1234567890</p>
+      <p>+91 0987654321</p>
+    </div>
+    <div class="footer-links text-center"><a href="#">Learn More About Us</a></div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/recipe.js"></script>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({ pageLanguage: "en", includedLanguages: "hi,zh-CN,ru,es,fr", layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, "google_translate_element");
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>
