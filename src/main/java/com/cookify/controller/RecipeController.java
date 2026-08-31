@@ -1,0 +1,69 @@
+package com.cookify.controller;
+
+import com.cookify.dto.ApiResponse;
+import com.cookify.dto.RecipeCreateRequest;
+import com.cookify.dto.RecipeResponse;
+import com.cookify.dto.RecipeSummaryResponse;
+import com.cookify.dto.RecipeUpdateRequest;
+import com.cookify.model.recipe.Recipe;
+import com.cookify.security.CookifyUserDetails;
+import com.cookify.service.RecipeService;
+import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/recipes")
+public class RecipeController {
+
+    private final RecipeService recipeService;
+
+    public RecipeController(RecipeService recipeService) {
+        this.recipeService = recipeService;
+    }
+
+    /** GET is public (browsing recipes needs no login); POST/PUT require auth via SecurityConfig. */
+    @GetMapping
+    public ApiResponse<List<RecipeSummaryResponse>> list() {
+        List<RecipeSummaryResponse> recipes = recipeService.listRecipes().stream()
+                .map(r -> RecipeSummaryResponse.from(r, recipeService.averageRating(r.getId()), recipeService.ratingCount(r.getId())))
+                .toList();
+        return ApiResponse.ok("OK", recipes);
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse<RecipeResponse> get(@PathVariable Long id) {
+        Recipe recipe = recipeService.viewRecipe(id);
+        return ApiResponse.ok("OK", RecipeResponse.from(recipe, recipeService.averageRating(id), recipeService.ratingCount(id)));
+    }
+
+    @PostMapping(consumes = "multipart/form-data")
+    public ApiResponse<RecipeResponse> create(@AuthenticationPrincipal CookifyUserDetails principal,
+                                               @Valid @RequestPart("recipe") RecipeCreateRequest request,
+                                               @RequestPart(value = "image", required = false) MultipartFile image,
+                                               @RequestPart(value = "video", required = false) MultipartFile video) {
+        Recipe recipe = recipeService.createRecipe(principal.getUser(), request, image, video);
+        return ApiResponse.ok("Recipe Uploaded Successfully",
+                RecipeResponse.from(recipe, recipeService.averageRating(recipe.getId()), recipeService.ratingCount(recipe.getId())));
+    }
+
+    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
+    public ApiResponse<RecipeResponse> update(@AuthenticationPrincipal CookifyUserDetails principal,
+                                               @PathVariable Long id,
+                                               @Valid @RequestPart("recipe") RecipeUpdateRequest request,
+                                               @RequestPart(value = "image", required = false) MultipartFile image,
+                                               @RequestPart(value = "video", required = false) MultipartFile video) {
+        Recipe recipe = recipeService.updateRecipe(principal.getUser(), id, request, image, video);
+        return ApiResponse.ok("Recipe updated",
+                RecipeResponse.from(recipe, recipeService.averageRating(id), recipeService.ratingCount(id)));
+    }
+}

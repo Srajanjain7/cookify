@@ -15,22 +15,31 @@ import java.util.UUID;
 
 /**
  * Stores uploaded files under ./uploads/{category}/. Shared between
- * profile picture upload (this phase) and recipe image/video upload
+ * profile picture upload (Phase 2) and recipe image/video upload
  * (Phase 3) rather than duplicating multipart handling twice.
  */
 @Service
 public class FileStorageService {
 
     private static final Set<String> ALLOWED_IMAGE_EXTENSIONS = Set.of("jpg", "jpeg", "png", "gif", "webp");
+    private static final Set<String> ALLOWED_VIDEO_EXTENSIONS = Set.of("mp4", "mov", "webm", "mkv");
     private static final Path UPLOAD_ROOT = Paths.get("uploads");
 
     public String storeImage(MultipartFile file, String category) {
+        return store(file, category, ALLOWED_IMAGE_EXTENSIONS, "Error: Invalid image format");
+    }
+
+    public String storeVideo(MultipartFile file, String category) {
+        return store(file, category, ALLOWED_VIDEO_EXTENSIONS, "Error: Invalid video format");
+    }
+
+    private String store(MultipartFile file, String category, Set<String> allowedExtensions, String errorMessage) {
         if (file == null || file.isEmpty()) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Error: Invalid image format");
+            throw new ApiException(HttpStatus.BAD_REQUEST, errorMessage);
         }
         String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
-        if (extension == null || !ALLOWED_IMAGE_EXTENSIONS.contains(extension.toLowerCase())) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Error: Invalid image format");
+        if (extension == null || !allowedExtensions.contains(extension.toLowerCase())) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, errorMessage);
         }
 
         try {

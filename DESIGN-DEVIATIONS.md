@@ -134,3 +134,30 @@ not replacing, the class hierarchy.
 - **"Restricted symbols"** (password rule) is undefined anywhere in the
   source material. Interpreted as: no whitespace/control characters,
   everything else allowed — see the javadoc on `Validators`.
+
+## Phase 3: recipe CRUD + media
+
+- **Veg/Non-Veg can't be changed on edit.** Phase 1 modeled diet as a
+  real Java class hierarchy (`Recipe` abstract → `VegRecipe`,
+  `NonVegRecipe`) using JPA single-table inheritance, per the UML
+  diagram and the assignment's explicit "OOP for recipe categorization
+  (inheritance, polymorphism)" requirement. That ties each database row
+  to a fixed discriminator/Java class at creation time -- there's no
+  in-place way to turn a `VegRecipe` row into a `NonVegRecipe` row
+  without deleting and recreating it (which would orphan any ratings/
+  comments already attached). `RecipeUpdateRequest` therefore has no
+  `dietType` field; every other field, including the finer-grained
+  `dietaryTag` (vegan/eggetarian/pescetarian/jain/etc.), remains
+  editable. Not called for explicitly in the source material, which
+  never depicts an edit flow in detail -- flagged here as a real
+  consequence of the OOP design choice, not a silent gap.
+- **No delete-recipe endpoint.** The Overall Structure Diagram lists
+  "Edit recipe" but not delete, and no test case covers it. Left out
+  to match the specified scope rather than added speculatively;
+  straightforward to add later (would need to decide what happens to
+  existing ratings/comments/saved-recipe rows referencing it).
+- **Recipe.method stays a single text field** (as in the ERD), not a
+  structured list of numbered steps, even though the Recipe Upload and
+  Recipe View prototypes show steps 1-9 individually. Schema was
+  already fixed in Phase 1; the frontend can format/number a
+  newline-joined string without a schema change.
