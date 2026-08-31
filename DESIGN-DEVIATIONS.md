@@ -386,3 +386,33 @@ not replacing, the class hierarchy.
      backend, with zero browser console errors across every screen
      exercised (signup, login, 2FA, recipe upload with image, rating,
      commenting, search/filter, and profile viewing/editing).
+
+## Phase 8: chat
+
+- **No source artifact models chat at all** -- no table, ERD entry,
+  flowchart, pseudocode, prototype, or test case; the entire
+  requirement is the one line "Built-in chat system for user
+  communication" in the key features list. Built as the smallest thing
+  that's genuinely a chat feature rather than a stub: 1-to-1 text
+  messages (`ChatMessage`: sender, recipient, text, timestamp),
+  a conversation list, and a message thread.
+- **Polling, not WebSocket.** A 4-second `setInterval` refetch is
+  enough to feel live for two people testing this app and avoids
+  pulling in STOMP/WebSocket infrastructure and its own connection-
+  lifecycle concerns for a feature with zero specified requirements to
+  weigh that cost against. Verified working across two independent
+  browser sessions (separate cookie jars/contexts), including that a
+  reply sent from one session is picked up by the other via polling
+  alone, with no manual refresh.
+- **No NSFW filtering on chat messages.** `ModerationService.isSafe()`
+  is only wired into Commenting; nothing ties chat to the moderation
+  system anywhere in the source material, and adding it would be
+  scope beyond a deliberately thin slice. Chat messages *are* included
+  in the Phase 5 ban cascade, though -- "interaction history" covers
+  them the same as comments/ratings/recipes, confirmed live (banned a
+  user mid-conversation and verified their messages disappeared from
+  the other party's conversation list).
+- **Reachable only from a profile page's "Message" button**, not from
+  a global inbox/contacts list -- there's no roster of "people you can
+  message" specified anywhere, so the natural entry point is the same
+  place subscribing happens: another user's profile.

@@ -111,7 +111,8 @@ async function render() {
   } else if (currentUser) {
     actionHtml = `<button class="btn ${profile.subscribedByMe ? "btn-secondary" : "btn-primary"} btn-sm" id="subscribe-btn" data-subscribed="${profile.subscribedByMe}">
       ${profile.subscribedByMe ? "Subscribed" : "Subscribe"}
-    </button>`;
+    </button>
+    <a class="btn btn-secondary btn-sm" href="chat.html?with=${encodeURIComponent(username)}">Message</a>`;
   }
 
   const recipes = await Api.get(`/api/users/${encodeURIComponent(username)}/recipes`);

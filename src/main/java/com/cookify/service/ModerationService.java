@@ -4,6 +4,7 @@ import com.cookify.model.AccountStatus;
 import com.cookify.model.User;
 import com.cookify.model.Warning;
 import com.cookify.model.recipe.Recipe;
+import com.cookify.repository.ChatMessageRepository;
 import com.cookify.repository.CommentRepository;
 import com.cookify.repository.RatingRepository;
 import com.cookify.repository.RecipeRepository;
@@ -46,6 +47,7 @@ public class ModerationService {
     private final SavedRecipeRepository savedRecipeRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final RecipeRepository recipeRepository;
+    private final ChatMessageRepository chatMessageRepository;
     private final MailService mailService;
 
     public ModerationService(UserRepository userRepository,
@@ -55,6 +57,7 @@ public class ModerationService {
                               SavedRecipeRepository savedRecipeRepository,
                               SubscriptionRepository subscriptionRepository,
                               RecipeRepository recipeRepository,
+                              ChatMessageRepository chatMessageRepository,
                               MailService mailService) {
         this.userRepository = userRepository;
         this.warningRepository = warningRepository;
@@ -63,6 +66,7 @@ public class ModerationService {
         this.savedRecipeRepository = savedRecipeRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.recipeRepository = recipeRepository;
+        this.chatMessageRepository = chatMessageRepository;
         this.mailService = mailService;
     }
 
@@ -128,6 +132,8 @@ public class ModerationService {
         savedRecipeRepository.deleteByUserId(user.getId());
         subscriptionRepository.deleteBySubscriberId(user.getId());
         subscriptionRepository.deleteByCreatorId(user.getId());
+        chatMessageRepository.deleteBySenderId(user.getId());
+        chatMessageRepository.deleteByRecipientId(user.getId());
 
         if (!ownRecipes.isEmpty()) {
             recipeRepository.deleteAll(ownRecipes);
