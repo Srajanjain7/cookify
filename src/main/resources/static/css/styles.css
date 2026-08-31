@@ -944,7 +944,8 @@ input[type="range"]::-moz-range-thumb {
   background: var(--nonveg-text);
 }
 
-.recipe-card.veg .diet-dot {
+.recipe-card.veg .diet-dot,
+.diet-badge.veg .diet-dot {
   background: var(--veg-text);
 }
 
@@ -1346,6 +1347,41 @@ input[type="range"]::-moz-range-thumb {
 
 #google_translate_element {
   font-size: 0.8rem;
+  line-height: 1;
+}
+
+/* Google injects this markup itself (InlineLayout.SIMPLE), so it can
+   only be restyled via its own classes, not by editing our HTML. */
+.goog-te-gadget-simple {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-pill) !important;
+  padding: 7px 14px !important;
+  font-family: var(--font-body) !important;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.goog-te-gadget-simple .goog-te-menu-value {
+  color: var(--text) !important;
+  font-size: 0.82rem !important;
+  font-weight: 500;
+}
+
+.goog-te-gadget-simple .goog-te-menu-value:hover {
+  text-decoration: none !important;
+}
+
+.goog-te-gadget-simple .goog-te-menu-value span {
+  border: none !important;
+  color: inherit !important;
+}
+
+.goog-te-gadget-icon {
+  display: none !important;
 }
 
 /* ---------- Utility ---------- */

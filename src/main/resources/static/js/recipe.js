@@ -175,8 +175,9 @@ async function renderRecipe(recipe) {
   const content = document.getElementById("content");
   const badgeText = recipe.dietaryLabel === "Vegetarian" ? "Veg" : "Non-Veg";
   const badgeClass = recipe.dietaryLabel === "Vegetarian" ? "veg" : "non-veg";
-  const img = recipe.imagePath ? `<img src="/uploads/${recipe.imagePath}" alt="${escapeHtml(recipe.recipeName)}">` : "";
-  const video = recipe.videoUrl ? `<video controls src="/uploads/${recipe.videoUrl}"></video>` : "";
+  const media = recipe.videoUrl
+    ? `<video controls src="/uploads/${recipe.videoUrl}"></video>`
+    : (recipe.imagePath ? `<img src="/uploads/${recipe.imagePath}" alt="${escapeHtml(recipe.recipeName)}">` : "");
   const editLink = currentUser && currentUser.username === recipe.creatorUsername
     ? `<a class="btn btn-secondary btn-sm" href="recipe-form.html?id=${recipe.id}">&#9998; Edit recipe</a>` : "";
   const subscribeHtml = await subscribeSection(recipe);
@@ -193,7 +194,7 @@ async function renderRecipe(recipe) {
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">${subscribeHtml}${editLink}</div>
       </div>
 
-      <div class="recipe-media">${img}${video}</div>
+      <div class="recipe-media">${media}</div>
 
       ${infoCardGrid(recipe)}
       <div class="recipe-meta-row">${metaPills(recipe)}</div>
