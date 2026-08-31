@@ -8,13 +8,17 @@ A recipe-sharing web application: sign up, upload recipes with photo/video, sear
 
 ## Screenshots
 
-| Landing | Explore | Recipe detail |
+| Home | Explore | Explore (filtered) |
 |---|---|---|
-| ![Landing page](screenshots/01-landing.png) | ![Explore Recipes](screenshots/02-browse.png) | ![Recipe detail](screenshots/03-recipe-detail.png) |
+| ![Home page](screenshots/01-landing.png) | ![Explore Recipes](screenshots/02-browse.png) | ![Explore filtered to Non-Veg](screenshots/06-browse-filtered-nonveg.png) |
 
-| Add Recipe | Profile |
-|---|---|
-| ![Add Recipe form](screenshots/04-recipe-form.png) | ![Profile page](screenshots/05-profile.png) |
+| Recipe detail | Add Recipe | Profile |
+|---|---|---|
+| ![Recipe detail](screenshots/03-recipe-detail.png) | ![Add Recipe form](screenshots/04-recipe-form.png) | ![Profile page](screenshots/05-profile.png) |
+
+| Login | Sign Up | Chat |
+|---|---|---|
+| ![Login page](screenshots/07-login.png) | ![Sign Up page](screenshots/08-signup.png) | ![Chat page](screenshots/09-chat.png) |
 
 ## Running it locally
 

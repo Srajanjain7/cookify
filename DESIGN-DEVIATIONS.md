@@ -332,12 +332,17 @@ not replacing, the class hierarchy.
   reset.html`, `browse.html`, `recipe.html`, `recipe-form.html`
   serving both Upload and Edit, `profile.html` serving both the owner
   view with Edit Profile and the public view with Subscribe). The
-  landing page auto-redirects to `browse.html` when a session is
-  already active, rather than showing the splash every visit --
-  reconciling the PDF's structure diagram (Homepage gates on Signup/
-  Login) with "remember login details on devices" (test case 2)
+  landing page originally auto-redirected to `browse.html` when a
+  session was already active, rather than showing the splash every
+  visit -- reconciling the PDF's structure diagram (Homepage gates on
+  Signup/Login) with "remember login details on devices" (test case 2)
   actually being visible to a returning user, not just true in the
-  session cookie.
+  session cookie. **Superseded in the UI redesign** (after Phase 8):
+  `index.html` is now a real home page (hero, Trending/Top Rated/
+  Latest/Recommended sections) rather than a login-or-redirect splash,
+  so it's shown to every visitor regardless of session state --
+  "remember login details" is still satisfied by the nav showing the
+  logged-in user immediately, without needing a redirect to prove it.
 - **2FA is presented as a two-step reveal on one screen**, not two
   screens: the OTP field is hidden until the identifier/password step
   succeeds, then appears in place with the same fields disabled --
