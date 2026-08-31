@@ -5,6 +5,7 @@ import com.cookify.dto.RecipeSearchCriteria;
 import com.cookify.dto.RecipeSummaryResponse;
 import com.cookify.dto.RecipeUpdateRequest;
 import com.cookify.exception.ApiException;
+import com.cookify.model.Subscription;
 import com.cookify.model.User;
 import com.cookify.model.recipe.DietaryTag;
 import com.cookify.model.recipe.NonVegRecipe;
@@ -36,15 +37,18 @@ public class RecipeService {
     private final RatingRepository ratingRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final FileStorageService fileStorageService;
+    private final MailService mailService;
 
     public RecipeService(RecipeRepository recipeRepository,
                           RatingRepository ratingRepository,
                           SubscriptionRepository subscriptionRepository,
-                          FileStorageService fileStorageService) {
+                          FileStorageService fileStorageService,
+                          MailService mailService) {
         this.recipeRepository = recipeRepository;
         this.ratingRepository = ratingRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.fileStorageService = fileStorageService;
+        this.mailService = mailService;
     }
 
     @Transactional
@@ -68,7 +72,26 @@ public class RecipeService {
             recipe.setVideoUrl(fileStorageService.storeVideo(video, "recipe-videos"));
         }
 
-        return recipeRepository.save(recipe);
+        recipe = recipeRepository.save(recipe);
+        notifySubscribers(recipe);
+        return recipe;
+    }
+
+    /**
+     * "Subscription system that emails users when someone they follow
+     * uploads a new recipe" -- distinct from the Subscription
+     * pseudocode's own single email (creator notified of a new
+     * subscriber, handled in SubscriptionService). Fires on create
+     * only, not edit: "uploads a new recipe" describes the upload
+     * action, not every subsequent update to it.
+     */
+    private void notifySubscribers(Recipe recipe) {
+        List<Subscription> subscriptions = subscriptionRepository.findByCreatorId(recipe.getCreator().getId());
+        for (Subscription subscription : subscriptions) {
+            User follower = subscription.getSubscriber();
+            mailService.send(follower.getEmail(), recipe.getCreator().getUsername() + " uploaded a new recipe",
+                    recipe.getCreator().getUsername() + " just uploaded \"" + recipe.getRecipeName() + "\" on COOKify.");
+        }
     }
 
     @Transactional
@@ -146,6 +169,17 @@ public class RecipeService {
         return scored.stream()
                 .map(s -> RecipeSummaryResponse.from(s.recipe(), s.avgRating(), s.ratingCount()))
                 .toList();
+    }
+
+    /** Backs the Profile Page's "Uploaded Recipes" carousel. */
+    public List<RecipeSummaryResponse> listByCreator(Long creatorId) {
+        return recipeRepository.findByCreatorId(creatorId).stream()
+                .map(r -> RecipeSummaryResponse.from(r, averageRating(r.getId()), ratingCount(r.getId())))
+                .toList();
+    }
+
+    public long countByCreator(Long creatorId) {
+        return recipeRepository.countByCreatorId(creatorId);
     }
 
     public double averageRating(Long recipeId) {

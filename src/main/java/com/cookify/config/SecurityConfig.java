@@ -102,7 +102,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/api/csrf", "/h2-console/**",
                                 "/", "/index.html", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/recipes/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/recipes/**", "/api/users/**").permitAll()
                         .anyRequest().authenticated())
                 .securityContext(context -> context.securityContextRepository(securityContextRepository))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))

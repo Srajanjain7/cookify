@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
     Optional<Subscription> findBySubscriberIdAndCreatorId(Long subscriberId, Long creatorId);
     long countByCreatorId(Long creatorId);
+    long countBySubscriberId(Long subscriberId);
     List<Subscription> findByCreatorId(Long creatorId);
     List<Subscription> findBySubscriberId(Long subscriberId);
 

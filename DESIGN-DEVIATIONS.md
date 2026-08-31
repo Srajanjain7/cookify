@@ -278,3 +278,41 @@ not replacing, the class hierarchy.
   against two scenarios: a user with no recipes of their own, and a
   user whose own recipe (with another user's comment and rating on
   it) had to be fully removed as part of the same ban.
+
+## Phase 6: subscriptions & notifications
+
+- **The Subscription pseudocode's `validateCommentSafe()` gate is not
+  implemented.** A subscribe action has no text/comment input anywhere
+  to validate -- the Subscription and Commenting pseudocode blocks
+  look like they share a copy-pasted safety check that only makes
+  sense for the latter (flagged as an ambiguity in the original
+  requirements analysis, section N). Subscribing is unconditional
+  (subject only to the not-yourself and user-exists checks below).
+- **Two distinct notification paths, not one:** the pseudocode's own
+  "NOTIFY Recipe Owner via Email" (on gaining a subscriber) is one
+  email, sent from `SubscriptionService.subscribe()`. The separately
+  and explicitly named key feature "subscription system that emails
+  users when someone they follow uploads a new recipe" is the other
+  -- implemented in `RecipeService.notifySubscribers()`, called once
+  per `createRecipe()` (not `updateRecipe()`: "uploads a new recipe"
+  describes the upload action, editing an existing one isn't a new
+  upload). No source artifact ties these two together; they're kept
+  separate since they notify different people about different events.
+- **Subscribing is idempotent** (subscribing twice is a silent no-op,
+  no duplicate row or repeat email) and **self-subscription is
+  rejected** ("You can't subscribe to yourself") -- neither is
+  specified, but both are ordinary follow-button behavior and match
+  the SUBSCRIBE-button UI shown on the Profile Page and Recipe View
+  prototypes without changing what test case 13 checks for.
+- **Added a public profile endpoint** (`GET /api/users/{username}`)
+  with follower/following/uploaded-recipe counts and the viewer's own
+  subscribed state. Not itself a named requirement, but subscribing
+  "to another account" (test case 13) has nowhere to happen without
+  some way to view that account first, and the Profile Page prototype
+  already shows Followers/Following counts with no endpoint that could
+  produce them before this phase.
+- **`SavedRecipe` (Phase 1's entity backing the Profile Page's "Saved
+  Recipes" carousel) still has no save/unsave endpoint.** Out of scope
+  for a phase about subscriptions specifically; noted here so it
+  doesn't read as an oversight when the frontend phase reaches that
+  carousel.
