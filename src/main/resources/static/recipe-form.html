@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Upload Recipe - COOKify</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -11,83 +14,81 @@
     <a href="index.html" class="logo"><span class="cook">COOK</span><span class="ify">ify</span></a>
     <ul class="nav-links">
       <li><a href="browse.html">Explore</a></li>
-    <li><a href="chat.html">Chat</a></li>
+      <li><a href="recipe-form.html">Become a Creator</a></li>
+      <li><a href="chat.html">Chat</a></li>
     </ul>
     <div id="google_translate_element"></div>
     <div class="nav-right" id="nav-right"></div>
   </nav>
 
   <div class="container" style="max-width: 720px;">
-    <div class="explore-panel">
-      <h1 id="form-title">Add Recipe</h1>
-      <div id="alert-box"></div>
+    <h1 id="form-title" style="margin: 28px 0 4px;">Add Recipe</h1>
+    <p style="color: var(--text-muted); margin: 0 0 20px;">Share your recipe with the COOKify community.</p>
+    <div id="alert-box"></div>
 
-      <form id="recipe-form">
+    <form id="recipe-form">
+      <div class="explore-panel" style="margin-bottom: 18px;">
+        <h3>&#128221; Basic Information</h3>
         <div class="form-group">
           <label for="recipe-name">Title</label>
-          <input class="input-pill" type="text" id="recipe-name" required />
+          <input class="input-pill" type="text" id="recipe-name" placeholder="e.g. Grandma's Idli Dosa" required />
         </div>
 
         <div class="form-group" id="diet-type-group">
           <label>Veg / Non-Veg</label>
           <div class="filters-toggle">
-            <span class="chip" data-diet="VEG">Veg</span>
-            <span class="chip" data-diet="NON_VEG">Non-Veg</span>
+            <span class="chip" data-diet="VEG">&#127807; Veg</span>
+            <span class="chip" data-diet="NON_VEG">&#127831; Non-Veg</span>
           </div>
         </div>
+      </div>
 
+      <div class="explore-panel" style="margin-bottom: 18px;">
+        <h3>&#128248; Media</h3>
         <div class="form-group">
-          <label for="image-file">Upload Image</label>
+          <label for="image-file">Recipe Photo</label>
           <input type="file" id="image-file" accept="image/*" />
+          <img id="image-preview" class="hidden" alt="Preview" style="margin-top:12px;max-width:100%;max-height:260px;border-radius:var(--radius);object-fit:cover;" />
         </div>
         <div class="form-group">
-          <label for="video-file">Upload Video (optional)</label>
+          <label for="video-file">Recipe Video (optional)</label>
           <input type="file" id="video-file" accept="video/*" />
+          <video id="video-preview" class="hidden" controls style="margin-top:12px;max-width:100%;max-height:260px;border-radius:var(--radius);"></video>
         </div>
+      </div>
 
+      <div class="explore-panel" style="margin-bottom: 18px;">
+        <h3>&#127831; Ingredients</h3>
         <div class="form-group">
-          <label for="ingredients">Ingredients</label>
-          <textarea class="input-pill" id="ingredients" rows="3" required></textarea>
+          <label for="ingredients">List every ingredient</label>
+          <textarea class="input-pill" id="ingredients" rows="3" placeholder="e.g. 2 cups rice, 1 cup urad dal, salt to taste" required></textarea>
+          <div class="char-count" id="ingredients-count">0 characters</div>
         </div>
-
-        <div class="form-group">
-          <label for="method">Steps (one per line)</label>
-          <textarea class="input-pill" id="method" rows="6" placeholder="1. Boil water&#10;2. Add rice&#10;3. Simmer for 10 minutes" required></textarea>
-        </div>
-
         <div class="form-group">
           <label for="required-equipment">Required Equipment (optional)</label>
           <input class="input-pill" type="text" id="required-equipment" placeholder="e.g. steamer, blender" />
         </div>
+      </div>
 
+      <div class="explore-panel" style="margin-bottom: 18px;">
+        <h3>&#128203; Instructions</h3>
+        <div class="form-group">
+          <label for="method">Steps (one per line)</label>
+          <textarea class="input-pill" id="method" rows="6" placeholder="1. Boil water&#10;2. Add rice&#10;3. Simmer for 10 minutes" required></textarea>
+          <div class="char-count" id="method-count">0 characters</div>
+        </div>
+      </div>
+
+      <div class="explore-panel" style="margin-bottom: 18px;">
+        <h3>&#9201; Cooking Information</h3>
         <div class="filters-grid">
           <div>
-            <label for="dietary-tag">Dietary Tag</label>
-            <select class="input-pill" id="dietary-tag">
-              <option value="">None</option>
-              <option value="VEGAN">Vegan</option>
-              <option value="VEGETARIAN">Vegetarian</option>
-              <option value="EGGETARIAN">Eggetarian</option>
-              <option value="PESCETARIAN">Pescetarian</option>
-              <option value="JAIN">Jain</option>
-              <option value="NON_VEGETARIAN">Non-Vegetarian</option>
-            </select>
-          </div>
-          <div>
             <label for="cooking-time">Cooking Time (min)</label>
-            <input class="input-pill" type="number" id="cooking-time" min="0" />
+            <input class="input-pill" type="number" id="cooking-time" min="0" placeholder="e.g. 45" />
           </div>
           <div>
-            <label for="calories">Calories</label>
-            <input class="input-pill" type="number" id="calories" min="0" />
-          </div>
-          <div>
-            <label for="protein">Protein (g)</label>
-            <input class="input-pill" type="number" id="protein" min="0" />
-          </div>
-          <div>
-            <label for="cost">Cost</label>
-            <input class="input-pill" type="number" id="cost" min="0" step="0.01" />
+            <label for="cost">Cost (&#8377;)</label>
+            <input class="input-pill" type="number" id="cost" min="0" step="0.01" placeholder="e.g. 150" />
           </div>
           <div>
             <label for="speed">Speed (1-5)</label>
@@ -103,19 +104,71 @@
               <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
             </select>
           </div>
+        </div>
+      </div>
+
+      <div class="explore-panel" style="margin-bottom: 18px;">
+        <h3>&#127859; Nutrition</h3>
+        <div class="filters-grid">
           <div>
-            <label for="cuisine-region">Cuisine Region</label>
-            <input class="input-pill" type="text" id="cuisine-region" placeholder="e.g. South Indian" />
+            <label for="calories">Calories</label>
+            <input class="input-pill" type="number" id="calories" min="0" placeholder="e.g. 350" />
           </div>
           <div>
-            <label for="food-type">Food Type</label>
-            <input class="input-pill" type="text" id="food-type" placeholder="e.g. Appetizer" />
+            <label for="protein">Protein (g)</label>
+            <input class="input-pill" type="number" id="protein" min="0" placeholder="e.g. 12" />
           </div>
         </div>
+      </div>
 
-        <button type="submit" class="btn btn-primary btn-block mt-16" id="submit-btn">Submit Recipe</button>
-      </form>
-    </div>
+      <div class="explore-panel" style="margin-bottom: 18px;">
+        <h3>&#127991; Category &amp; Tags</h3>
+        <div class="filters-grid">
+          <div>
+            <label for="dietary-tag">Dietary Tag</label>
+            <select class="input-pill" id="dietary-tag">
+              <option value="">None</option>
+              <option value="VEGAN">Vegan</option>
+              <option value="VEGETARIAN">Vegetarian</option>
+              <option value="EGGETARIAN">Eggetarian</option>
+              <option value="PESCETARIAN">Pescetarian</option>
+              <option value="JAIN">Jain</option>
+              <option value="NON_VEGETARIAN">Non-Vegetarian</option>
+            </select>
+          </div>
+          <div>
+            <label for="food-type">Category</label>
+            <input class="input-pill" type="text" id="food-type" list="form-food-type-options" placeholder="e.g. Appetizer" />
+            <datalist id="form-food-type-options">
+              <option value="Breakfast"></option>
+              <option value="Appetizer"></option>
+              <option value="Main Course"></option>
+              <option value="Salad"></option>
+              <option value="Dessert"></option>
+              <option value="Bread"></option>
+            </datalist>
+          </div>
+          <div>
+            <label for="cuisine-region">Regionality</label>
+            <input class="input-pill" type="text" id="cuisine-region" list="form-cuisine-options" placeholder="e.g. South Indian" />
+            <datalist id="form-cuisine-options">
+              <option value="South Indian"></option>
+              <option value="North Indian"></option>
+              <option value="pan-Asian"></option>
+              <option value="English"></option>
+              <option value="Mediterranean"></option>
+              <option value="Mexican"></option>
+            </datalist>
+          </div>
+        </div>
+      </div>
+
+      <div class="explore-panel">
+        <h3>&#128640; Publishing</h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem;">Review your recipe above, then publish it for the COOKify community to discover.</p>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="submit-btn">Publish Recipe</button>
+      </div>
+    </form>
   </div>
 
   <footer class="site-footer">

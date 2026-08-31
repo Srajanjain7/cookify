@@ -23,6 +23,41 @@ document.querySelectorAll("#diet-type-group .chip").forEach((chip) => {
   });
 });
 
+/* Purely visual: live image/video preview + character counters.
+   Does not touch what actually gets submitted (buildFormData() still
+   reads straight from the file inputs and textareas). */
+document.getElementById("image-file").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  const preview = document.getElementById("image-preview");
+  if (file) {
+    preview.src = URL.createObjectURL(file);
+    preview.classList.remove("hidden");
+  } else {
+    preview.classList.add("hidden");
+  }
+});
+
+document.getElementById("video-file").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  const preview = document.getElementById("video-preview");
+  if (file) {
+    preview.src = URL.createObjectURL(file);
+    preview.classList.remove("hidden");
+  } else {
+    preview.classList.add("hidden");
+  }
+});
+
+function wireCharCount(fieldId, countId) {
+  const field = document.getElementById(fieldId);
+  const count = document.getElementById(countId);
+  field.addEventListener("input", () => {
+    count.textContent = `${field.value.length} characters`;
+  });
+}
+wireCharCount("ingredients", "ingredients-count");
+wireCharCount("method", "method-count");
+
 async function requireLogin() {
   try {
     return await Api.get("/api/profile/me");

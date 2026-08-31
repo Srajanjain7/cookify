@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Explore Recipes - COOKify</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -11,32 +14,92 @@
     <a href="index.html" class="logo"><span class="cook">COOK</span><span class="ify">ify</span></a>
     <ul class="nav-links">
       <li><a href="browse.html">Explore</a></li>
-    <li><a href="chat.html">Chat</a></li>
+      <li><a href="recipe-form.html">Become a Creator</a></li>
+      <li><a href="chat.html">Chat</a></li>
     </ul>
     <div id="google_translate_element"></div>
     <div class="nav-right" id="nav-right"></div>
   </nav>
 
   <div class="container">
-    <div class="explore-panel">
-      <h1>Explore Recipes</h1>
+    <h1 style="margin: 28px 0 4px;">Explore Recipes</h1>
+    <p style="color: var(--text-muted); margin: 0 0 20px;">Search and filter recipes by diet, cost, cooking time, calories, and more.</p>
 
-      <form id="search-form">
-        <div class="search-row">
-          <input class="input-pill" type="text" id="query" placeholder="Search recipe, ingredient, or equipment" />
-          <button type="submit" class="btn btn-primary">Search</button>
-        </div>
+    <form id="search-form" class="search-row" style="margin-bottom: 16px;">
+      <input class="input-pill" type="text" id="query" placeholder="Search recipe, ingredient, or equipment" aria-label="Search recipes" />
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
 
-        <div class="filters-toggle">
-          <span class="chip" data-diet="">Any</span>
-          <span class="chip" data-diet="VEG">Veg</span>
-          <span class="chip" data-diet="NON_VEG">Non-Veg</span>
-          <span class="chip hidden" id="recommended-chip" data-recommended="1">Recommended for you</span>
-        </div>
+    <button type="button" class="btn btn-secondary btn-sm filter-toggle-btn" id="filter-toggle-btn" aria-expanded="false" aria-controls="filter-sidebar">
+      &#9776; Filters
+    </button>
 
-        <div class="filters-grid">
-          <div>
-            <label>Min. Speed</label>
+    <div class="explore-layout">
+      <aside class="filter-sidebar" id="filter-sidebar">
+        <div class="explore-panel">
+          <h3>Filters</h3>
+          <div id="active-filters" class="active-filters"></div>
+
+          <div class="filter-section">
+            <span class="filter-label">Food Type</span>
+            <div class="chip-row" id="diet-chip-row">
+              <span class="chip active" data-diet="" tabindex="0" role="button">All</span>
+              <span class="chip" data-diet="VEG" tabindex="0" role="button">Veg</span>
+              <span class="chip" data-diet="NON_VEG" tabindex="0" role="button">Non-Veg</span>
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <span class="filter-label">Dietary Preference</span>
+            <div class="chip-row" id="dietary-tag-chip-row">
+              <span class="chip active" data-tag="" tabindex="0" role="button">All</span>
+              <span class="chip" data-tag="EGGETARIAN" tabindex="0" role="button">Eggetarian</span>
+              <span class="chip" data-tag="PESCETARIAN" tabindex="0" role="button">Pescetarian</span>
+              <span class="chip" data-tag="JAIN" tabindex="0" role="button">Jain</span>
+            </div>
+          </div>
+
+          <div class="filter-section hidden" id="recommended-section">
+            <span class="chip" id="recommended-chip" data-recommended="1" tabindex="0" role="button">&#10024; Recommended for you</span>
+          </div>
+
+          <div class="filter-section">
+            <span class="filter-label">Cooking Time</span>
+            <div class="slider-field">
+              <input type="range" id="max-cooking-time" min="0" max="600" step="15" value="600" aria-label="Maximum cooking time" />
+              <span class="slider-value" id="max-cooking-time-value">No limit</span>
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <span class="filter-label">Budget</span>
+            <div class="slider-field">
+              <input type="range" id="max-cost" min="0" max="1000" step="10" value="1000" aria-label="Maximum budget" />
+              <span class="slider-value" id="max-cost-value">No limit</span>
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <span class="filter-label">Calories</span>
+            <div class="slider-field">
+              <input type="range" id="max-calories" min="0" max="1000" step="25" value="1000" aria-label="Maximum calories" />
+              <span class="slider-value" id="max-calories-value">No limit</span>
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <span class="filter-label">Minimum Rating</span>
+            <div class="star-select" id="min-rating-stars" role="group" aria-label="Minimum rating filter">
+              <span data-score="1" tabindex="0" role="button" aria-label="1 star">&#9734;</span>
+              <span data-score="2" tabindex="0" role="button" aria-label="2 stars">&#9734;</span>
+              <span data-score="3" tabindex="0" role="button" aria-label="3 stars">&#9734;</span>
+              <span data-score="4" tabindex="0" role="button" aria-label="4 stars">&#9734;</span>
+              <span data-score="5" tabindex="0" role="button" aria-label="5 stars">&#9734;</span>
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <label for="min-speed" class="filter-label">Min. Speed</label>
             <select class="input-pill" id="min-speed">
               <option value="">Any</option>
               <option value="1">1+</option>
@@ -46,8 +109,9 @@
               <option value="5">5</option>
             </select>
           </div>
-          <div>
-            <label>Min. Difficulty</label>
+
+          <div class="filter-section">
+            <label for="min-difficulty" class="filter-label">Difficulty</label>
             <select class="input-pill" id="min-difficulty">
               <option value="">Any</option>
               <option value="1">1+</option>
@@ -57,42 +121,53 @@
               <option value="5">5</option>
             </select>
           </div>
-          <div>
-            <label>Max Cooking Time (min)</label>
-            <input class="input-pill" type="number" id="max-cooking-time" min="0" />
+
+          <div class="filter-section">
+            <label for="food-type" class="filter-label">Category</label>
+            <input class="input-pill" type="text" id="food-type" list="food-type-options" placeholder="Any category" />
+            <datalist id="food-type-options">
+              <option value="Breakfast"></option>
+              <option value="Appetizer"></option>
+              <option value="Main Course"></option>
+              <option value="Salad"></option>
+              <option value="Dessert"></option>
+              <option value="Bread"></option>
+            </datalist>
           </div>
-          <div>
-            <label>Cuisine Region</label>
-            <input class="input-pill" type="text" id="cuisine-region" placeholder="e.g. South Indian" />
+
+          <div class="filter-section">
+            <label for="cuisine-region" class="filter-label">Regionality</label>
+            <input class="input-pill" type="text" id="cuisine-region" list="cuisine-options" placeholder="Any region" />
+            <datalist id="cuisine-options">
+              <option value="South Indian"></option>
+              <option value="North Indian"></option>
+              <option value="pan-Asian"></option>
+              <option value="English"></option>
+              <option value="Mediterranean"></option>
+              <option value="Mexican"></option>
+            </datalist>
           </div>
-          <div>
-            <label>Food Type</label>
-            <input class="input-pill" type="text" id="food-type" placeholder="e.g. Appetizer" />
-          </div>
-          <div>
-            <label>Min. Rating</label>
-            <select class="input-pill" id="min-rating">
-              <option value="">Any</option>
-              <option value="1">1+</option>
-              <option value="2">2+</option>
-              <option value="3">3+</option>
-              <option value="4">4+</option>
-              <option value="5">5</option>
-            </select>
-          </div>
-          <div>
-            <label>Sort by</label>
+
+          <div class="filter-section">
+            <label for="sort" class="filter-label">Sort by</label>
             <select class="input-pill" id="sort">
               <option value="popular">Popular</option>
               <option value="newest">Newest</option>
-              <option value="topRated">Top Rated</option>
+              <option value="topRated">Highest Rated</option>
             </select>
           </div>
-        </div>
-      </form>
-    </div>
 
-    <div id="results"></div>
+          <button type="button" class="btn btn-ghost btn-block btn-sm" id="clear-filters-btn">Clear All Filters</button>
+        </div>
+      </aside>
+
+      <section>
+        <div class="results-toolbar">
+          <span class="result-count" id="result-count"></span>
+        </div>
+        <div id="results"></div>
+      </section>
+    </div>
   </div>
 
   <footer class="site-footer">

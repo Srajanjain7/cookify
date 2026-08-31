@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign Up - COOKify</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -14,37 +17,43 @@
 
   <div class="form-page">
     <div class="form-card">
-      <h1>Sign Up</h1>
+      <h1>Join COOKify</h1>
+      <p class="subtitle">Create an account to share and save recipes.</p>
       <div id="alert-box"></div>
 
       <form id="signup-form">
         <div class="form-group">
           <label for="username">Username</label>
-          <input class="input-pill" type="text" id="username" required />
+          <input class="input-pill" type="text" id="username" placeholder="e.g. chef_aryan" required />
         </div>
         <div class="form-group">
           <label for="email">Email</label>
-          <input class="input-pill" type="email" id="email" required />
+          <input class="input-pill" type="email" id="email" placeholder="you@example.com" required />
         </div>
         <div class="form-group">
           <label for="phone">Phone Number</label>
-          <input class="input-pill" type="text" id="phone" required />
+          <input class="input-pill" type="text" id="phone" placeholder="+91 12345 67890" required />
         </div>
         <div class="form-group">
           <label for="bio">Bio (optional)</label>
-          <textarea class="input-pill" id="bio" rows="2"></textarea>
+          <textarea class="input-pill" id="bio" rows="2" placeholder="Tell the community a bit about your cooking..." maxlength="500"></textarea>
+          <div class="char-count" id="bio-count">0 / 500</div>
         </div>
         <div class="form-group">
           <label for="password">Password</label>
           <input class="input-pill" type="password" id="password" required />
-          <div class="hint-box mt-16">At least 9 characters, no spaces.</div>
+          <ul class="pw-checklist">
+            <li id="pw-check-length">At least 9 characters</li>
+            <li id="pw-check-space">No spaces</li>
+          </ul>
         </div>
         <div class="form-group">
           <label for="confirm-password">Confirm Password</label>
           <input class="input-pill" type="password" id="confirm-password" required />
+          <div class="field-hint" id="pw-match-hint"></div>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-block">Confirm Sign Up</button>
+        <button type="submit" class="btn btn-primary btn-block btn-lg">Confirm Sign Up</button>
       </form>
 
       <p class="form-footer-link">Already have an account? <a href="login.html">Login</a></p>
@@ -62,6 +71,35 @@
 
   <script src="js/api.js"></script>
   <script>
+    // Live client-side mirror of the backend's password rule (Validators.validatePassword)
+    // -- purely a UX affordance, the server remains the authority.
+    document.getElementById("password").addEventListener("input", (e) => {
+      const v = e.target.value;
+      document.getElementById("pw-check-length").classList.toggle("ok", v.length >= 9);
+      document.getElementById("pw-check-space").classList.toggle("ok", v.length > 0 && !/\s/.test(v));
+    });
+
+    function updatePasswordMatchHint() {
+      const pw = document.getElementById("password").value;
+      const confirm = document.getElementById("confirm-password").value;
+      const hint = document.getElementById("pw-match-hint");
+      if (!confirm) {
+        hint.textContent = "";
+      } else if (pw === confirm) {
+        hint.textContent = "Passwords match";
+        hint.style.color = "var(--success)";
+      } else {
+        hint.textContent = "Passwords do not match yet";
+        hint.style.color = "var(--text-muted)";
+      }
+    }
+    document.getElementById("confirm-password").addEventListener("input", updatePasswordMatchHint);
+    document.getElementById("password").addEventListener("input", updatePasswordMatchHint);
+
+    document.getElementById("bio").addEventListener("input", (e) => {
+      document.getElementById("bio-count").textContent = `${e.target.value.length} / 500`;
+    });
+
     document.getElementById("signup-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const alertBox = document.getElementById("alert-box");

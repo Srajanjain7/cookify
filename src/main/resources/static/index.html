@@ -4,18 +4,66 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>COOKify</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <div class="form-page" style="padding-top: 80px;">
-    <div class="form-card text-center">
-      <div style="font-size: 2.4rem; margin-bottom: 24px;">
-        <span class="cook" style="font-weight: 800;">COOK</span><span style="color: var(--primary-end); font-weight: 800;">ify</span>
-      </div>
-      <a href="login.html" class="btn btn-primary btn-block" style="margin-bottom: 16px;">Login</a>
-      <a href="signup.html" class="btn btn-secondary btn-block">Sign Up</a>
-      <p class="mt-16"><a href="browse.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem;">Browse recipes without an account &rarr;</a></p>
+  <nav class="navbar">
+    <a href="index.html" class="logo"><span class="cook">COOK</span><span class="ify">ify</span></a>
+    <ul class="nav-links">
+      <li><a href="browse.html">Explore</a></li>
+      <li><a href="recipe-form.html">Become a Creator</a></li>
+      <li><a href="chat.html">Chat</a></li>
+    </ul>
+    <div id="google_translate_element"></div>
+    <div class="nav-right" id="nav-right"></div>
+  </nav>
+
+  <section class="hero">
+    <span class="hero-badge">&#127857; Recipes from real home cooks</span>
+    <h1>Discover Your Next <span class="accent">Favourite</span> Recipe</h1>
+    <p class="lead">Search, filter, and save recipes shared by a community of home cooks -- by ingredients, cost, cooking time, calories, and more.</p>
+
+    <form id="hero-search-form" class="hero-search">
+      <input type="text" id="hero-search-input" placeholder="Search recipes, ingredients or creators" aria-label="Search recipes, ingredients or creators" />
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <div class="hero-ctas">
+      <a href="browse.html" class="btn btn-secondary btn-lg">Explore Recipes</a>
+      <a href="recipe-form.html" class="btn btn-primary btn-lg">Share Your Recipe</a>
     </div>
+
+    <div class="hero-emoji-row" aria-hidden="true">&#127837; &#127858; &#127859; &#127840; &#127838;</div>
+  </section>
+
+  <div class="container">
+    <div id="recommended-home-section" class="hidden">
+      <div class="section-header">
+        <h2>&#10024; Recommended For You</h2>
+      </div>
+      <div id="recommended-home-results"></div>
+    </div>
+
+    <div class="section-header">
+      <h2>&#128293; Trending Recipes</h2>
+      <a href="browse.html?sort=popular">See all</a>
+    </div>
+    <div id="trending-home-results"></div>
+
+    <div class="section-header">
+      <h2>&#11088; Top Rated</h2>
+      <a href="browse.html?sort=topRated">See all</a>
+    </div>
+    <div id="top-rated-home-results"></div>
+
+    <div class="section-header">
+      <h2>&#128640; Latest Recipes</h2>
+      <a href="browse.html?sort=newest">See all</a>
+    </div>
+    <div id="latest-home-results"></div>
   </div>
 
   <footer class="site-footer">
@@ -24,22 +72,17 @@
       <p>Contact Info: +91 1234567890</p>
       <p>+91 0987654321</p>
     </div>
-    <div class="footer-links text-center">
-      <a href="#">Learn More About Us</a>
-    </div>
+    <div class="footer-links text-center"><a href="#">Learn More About Us</a></div>
   </footer>
 
   <script src="js/api.js"></script>
-  <script>
-    // "Remember login details on devices" (test case 2) -- skip the splash for an active session.
-    (async () => {
-      try {
-        await Api.get("/api/profile/me");
-        window.location.href = "browse.html";
-      } catch (e) {
-        // not logged in -- show the splash
-      }
-    })();
+  <script src="js/nav.js"></script>
+  <script src="js/home.js"></script>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({ pageLanguage: "en", includedLanguages: "hi,zh-CN,ru,es,fr", layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, "google_translate_element");
+    }
   </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

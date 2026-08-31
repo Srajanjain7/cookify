@@ -108,17 +108,50 @@ async function toggleSubscribe(btn, creatorUsername) {
 
 function metaPills(r) {
   const pills = [];
-  if (r.cookingTimeMinutes) pills.push(`⏱ ${r.cookingTimeMinutes} min`);
-  if (r.calories) pills.push(`${r.calories} kcal`);
-  if (r.protein) pills.push(`${r.protein}g protein`);
-  if (r.cost != null) pills.push(`₹${r.cost}`);
-  if (r.speedRating) pills.push(`Speed ${r.speedRating}/5`);
-  if (r.difficultyRating) pills.push(`Difficulty ${r.difficultyRating}/5`);
+  if (r.speedRating) pills.push(`&#9889; Speed ${r.speedRating}/5`);
+  if (r.difficultyRating) pills.push(`&#128293; Difficulty ${r.difficultyRating}/5`);
   if (r.cuisineRegion) pills.push(escapeHtml(r.cuisineRegion));
   if (r.foodType) pills.push(escapeHtml(r.foodType));
   if (r.dietaryTag) pills.push(escapeHtml(r.dietaryTag));
-  if (r.requiredEquipment) pills.push(`Needs: ${escapeHtml(r.requiredEquipment)}`);
   return pills.map((p) => `<span class="meta-pill">${p}</span>`).join("");
+}
+
+/** Page 3 spec: "attractive information cards/icons" for the core stats. */
+function infoCardGrid(r) {
+  const cards = [];
+  if (r.cookingTimeMinutes) cards.push({ icon: "&#9201;", value: `${r.cookingTimeMinutes} min`, label: "Cook Time" });
+  if (r.cost != null) cards.push({ icon: "&#128176;", value: `&#8377;${r.cost}`, label: "Cost" });
+  if (r.calories) cards.push({ icon: "&#128293;", value: `${r.calories}`, label: "Calories" });
+  if (r.protein) cards.push({ icon: "&#129385;", value: `${r.protein}g`, label: "Protein" });
+  if (cards.length === 0) return "";
+  return `<div class="info-card-grid">${cards.map((c) => `
+    <div class="info-card">
+      <span class="info-icon">${c.icon}</span>
+      <span class="info-value">${c.value}</span>
+      <span class="info-label">${c.label}</span>
+    </div>
+  `).join("")}</div>`;
+}
+
+function equipmentSection(r) {
+  if (!r.requiredEquipment) return "";
+  return `<h3>&#129384; Equipment</h3><p>${escapeHtml(r.requiredEquipment)}</p>`;
+}
+
+async function shareRecipe(btn) {
+  const url = window.location.href;
+  const originalText = btn.textContent;
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: window.__recipe.recipeName, url });
+      return;
+    }
+    await navigator.clipboard.writeText(url);
+    btn.textContent = "Link copied!";
+    setTimeout(() => { btn.textContent = originalText; }, 1800);
+  } catch (e) {
+    // user cancelled the native share sheet, or clipboard denied -- not an error worth surfacing
+  }
 }
 
 async function renderComments() {
@@ -140,43 +173,57 @@ async function renderComments() {
 async function renderRecipe(recipe) {
   window.__recipe = recipe;
   const content = document.getElementById("content");
-  const img = recipe.imagePath ? `<img src="/uploads/${recipe.imagePath}" alt="">` : "";
+  const badgeText = recipe.dietaryLabel === "Vegetarian" ? "Veg" : "Non-Veg";
+  const badgeClass = recipe.dietaryLabel === "Vegetarian" ? "veg" : "non-veg";
+  const img = recipe.imagePath ? `<img src="/uploads/${recipe.imagePath}" alt="${escapeHtml(recipe.recipeName)}">` : "";
   const video = recipe.videoUrl ? `<video controls src="/uploads/${recipe.videoUrl}"></video>` : "";
   const editLink = currentUser && currentUser.username === recipe.creatorUsername
-    ? `<a class="btn btn-secondary btn-sm" href="recipe-form.html?id=${recipe.id}">Edit recipe</a>` : "";
+    ? `<a class="btn btn-secondary btn-sm" href="recipe-form.html?id=${recipe.id}">&#9998; Edit recipe</a>` : "";
   const subscribeHtml = await subscribeSection(recipe);
 
   content.innerHTML = `
     <div class="recipe-detail">
       <div class="recipe-detail-header">
         <div>
+          <span class="diet-badge ${badgeClass}" style="position:static;display:inline-flex;margin-bottom:10px;"><span class="diet-dot"></span>${badgeText}</span>
           <h1 style="margin-bottom:4px;">${escapeHtml(recipe.recipeName)}</h1>
           <p style="color:var(--text-muted);margin:0;">By <a href="profile.html?user=${encodeURIComponent(recipe.creatorUsername)}">${escapeHtml(recipe.creatorUsername)}</a>
-            &middot; ${formatDate(recipe.uploadDate)} &middot; ${recipe.views} view(s)</p>
+            &middot; ${formatDate(recipe.uploadDate)} &middot; &#128065; ${recipe.views} view${recipe.views === 1 ? "" : "s"}</p>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;">${subscribeHtml}${editLink}</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">${subscribeHtml}${editLink}</div>
       </div>
 
       <div class="recipe-media">${img}${video}</div>
 
+      ${infoCardGrid(recipe)}
       <div class="recipe-meta-row">${metaPills(recipe)}</div>
 
-      <h3>Ingredients</h3>
+      <div class="action-row">
+        <a href="#rating-section" class="btn btn-secondary btn-sm">&#11088; Rate Recipe</a>
+        <a href="#comment-form-area" class="btn btn-secondary btn-sm">&#128172; Comment</a>
+        <button type="button" class="btn btn-secondary btn-sm" id="share-btn">&#128279; Share</button>
+      </div>
+
+      <h3>&#127831; Ingredients</h3>
       <p>${escapeHtml(recipe.ingredients)}</p>
 
-      <h3>Method</h3>
+      ${equipmentSection(recipe)}
+
+      <h3>&#128221; Method</h3>
       ${stepsHtml(recipe.method)}
 
-      <h3>Rating</h3>
+      <h3>&#11088; Rating</h3>
       <div id="rating-section">${ratingWidget(recipe)}</div>
     </div>
 
     <div class="recipe-detail">
-      <h3>Comments</h3>
+      <h3>&#128172; Comments</h3>
       <div id="comments-list"><p class="empty-state">Loading...</p></div>
       <div id="comment-form-area"></div>
     </div>
   `;
+
+  document.getElementById("share-btn").addEventListener("click", (e) => shareRecipe(e.currentTarget));
 
   if (currentUser) {
     attachRatingHandlers();

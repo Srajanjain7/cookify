@@ -11,16 +11,19 @@ function starString(avg) {
 
 function recipeCard(r) {
   const dietClass = r.dietaryLabel === "Vegetarian" ? "veg" : "non-veg";
+  const badgeText = r.dietaryLabel === "Vegetarian" ? "Veg" : "Non-Veg";
   const img = r.imagePath ? `/uploads/${r.imagePath}` : null;
   return `
-    <div class="recipe-card ${dietClass}">
-      <div class="recipe-card-top">
-        ${img ? `<img class="recipe-thumb" src="${img}" alt="">` : `<div class="recipe-thumb"></div>`}
+    <a class="recipe-card ${dietClass}" href="recipe.html?id=${r.id}">
+      <div class="recipe-card-media">
+        ${img ? `<img src="${img}" alt="${escapeHtml(r.recipeName)}" loading="lazy">` : ""}
+        <span class="diet-badge"><span class="diet-dot"></span>${badgeText}</span>
       </div>
-      <h3>${escapeHtml(r.recipeName)}</h3>
-      <p class="rating-line">${starString(r.averageRating)} ${r.ratingCount} rating(s)</p>
-      <a class="btn btn-primary btn-block btn-sm" href="recipe.html?id=${r.id}">Open recipe</a>
-    </div>
+      <div class="recipe-card-body">
+        <h3>${escapeHtml(r.recipeName)}</h3>
+        <p class="rating-line">${starString(r.averageRating)} ${r.ratingCount} rating${r.ratingCount === 1 ? "" : "s"}</p>
+      </div>
+    </a>
   `;
 }
 
@@ -157,8 +160,8 @@ async function render() {
       </div>
     ` : ""}
 
-    <h3 class="section-title">Uploaded Recipes</h3>
-    ${recipes.length ? `<div class="recipe-grid">${recipes.map(recipeCard).join("")}</div>` : `<p class="empty-state">No recipes uploaded yet.</p>`}
+    <h3 class="section-title">&#127859; Uploaded Recipes</h3>
+    ${recipes.length ? `<div class="recipe-grid">${recipes.map(recipeCard).join("")}</div>` : `<p class="empty-state"><span class="empty-icon">&#127860;</span>No recipes uploaded yet.</p>`}
   `;
 
   if (isOwnProfile) {
