@@ -76,4 +76,17 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserPreference preference;
+
+    // Ephemeral auth state -- never exposed via any DTO/API response.
+    @Column(name = "two_factor_code")
+    private String twoFactorCode;
+
+    @Column(name = "two_factor_code_expires_at")
+    private LocalDateTime twoFactorCodeExpiresAt;
+
+    @Column(name = "password_reset_token")
+    private String passwordResetToken;
+
+    @Column(name = "password_reset_token_expires_at")
+    private LocalDateTime passwordResetTokenExpiresAt;
 }

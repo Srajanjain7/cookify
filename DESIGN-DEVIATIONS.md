@@ -95,6 +95,42 @@ not replacing, the class hierarchy.
 
 - **Chat** — no table, flowchart, pseudocode, prototype, or test case
   exists anywhere in the source material. Deferred to its own phase.
-- **NSFW filtering logic**, **email sending**, **auth/session handling**,
-  **file upload validation** — service-layer concerns, not schema;
-  covered by later phases (Phase 2+), not this domain-model phase.
+- **NSFW filtering logic** — service-layer concern, covered when
+  comments are built (Phase 5), not this domain-model phase.
+
+## Phase 2: auth & accounts
+
+- **Password reset requires an emailed token before a new password can
+  be set.** The Login pseudocode's forgot-password branch explicitly
+  says "SEND password reset mail... DISPLAY Reset Email Sent", but the
+  Password Reset prototype screen shows only an identifier + New
+  Password + Confirm New Password with no token/OTP field at all —
+  taken literally, that would let anyone reset any account's password
+  just by knowing their username, no verification (an account-takeover
+  vulnerability). Implemented per the pseudocode instead: the emailed
+  token/code is required to confirm a reset, and the prototype's "New
+  Password" fields are read as the screen a user lands on *after*
+  following the emailed link (the token travels as a parameter the
+  static mockup doesn't depict), not as a same-screen bypass.
+  `AuthService.requestPasswordReset()` also always returns the same
+  "Reset Email Sent" response whether or not the account exists, to
+  avoid leaking which identifiers are registered — a security addition
+  beyond what the pseudocode specifies, not a contradiction of it.
+- **2FA is a two-step API flow** (`POST /api/auth/login` → if the
+  account has 2FA on, `TWO_FACTOR_REQUIRED` → `POST
+  /api/auth/verify-2fa`) rather than one combined submission. The Login
+  prototype shows identifier, password, and a 2FA OTP field together on
+  one screen, but also notes "User is emailed a 6 digit code" — implying
+  the code must already exist by the time it's entered, which requires
+  a first step (password check) to have already run. The two-step API
+  still supports a single visual screen: the frontend can reveal the
+  OTP field in place once step one succeeds.
+- **Login identifier email-format validation is conditional.** The
+  pseudocode calls `validateEmailFormat(UserID)` unconditionally, but
+  the same field accepts username/email/phone (per the Login
+  prototype). Applied only when the identifier contains "@" (i.e. it's
+  being used as an email), so a username or phone number login isn't
+  wrongly rejected as an "Invalid Email ID".
+- **"Restricted symbols"** (password rule) is undefined anywhere in the
+  source material. Interpreted as: no whitespace/control characters,
+  everything else allowed — see the javadoc on `Validators`.
